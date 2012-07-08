@@ -2,7 +2,7 @@
 
     <string name="app_name">Yoshimi </string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">Yoshimi Botnet</string>
+    <string name="title_activity_main">Yoshimi</string>
     <string name="status_button">Check Yoshimi Service Status</string>
 
 </resources>
