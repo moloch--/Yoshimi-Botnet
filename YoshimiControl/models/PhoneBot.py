@@ -19,10 +19,11 @@ Created on Mar 12, 2012
     limitations under the License.
 '''
 
+from datetime import datetime
 from models import dbsession
 from models.BaseObject import BaseObject
 from sqlalchemy import Column
-from sqlalchemy.types import Unicode
+from sqlalchemy.types import Unicode, DateTime
 
 class PhoneBot(BaseObject):
 
@@ -30,9 +31,12 @@ class PhoneBot(BaseObject):
     os_version = Column(Unicode(64))
     build_version = Column(Unicode(64))
     sdk_version = Column(Unicode(64))
+    release_version = Column(Unicode(64))
+    codename = Column(Unicode(64))
     device = Column(Unicode(64))
     model = Column(Unicode(64))
     product = Column(Unicode(64))
+    last_seen = Column(DateTime, default = datetime.now)
 
     @classmethod
     def get_all(cls):

@@ -10,11 +10,13 @@
 	        <thead>
 	          <tr>
 	            <th>#</th>
+	            <th>Model</th>
+	            <th>Release Version</th>
+	            <th>Codename</th>
 	            <th>Kernel Version</th>
 	            <th>Build Version</th>
 	            <th>API</th>
 	            <th>Device</th>
-	            <th>Model</th>
 	            <th>Product</th>
 	          </tr>
 	        </thead>
@@ -22,11 +24,13 @@
 	        	{% for bot in bots %}
 			          <tr>
 			            <td>{{ bot.id }}</td>
+			            <td>{{ bot.model }}</td>
+			            <td>{{ bot.release_version }}</td>
+			            <td>{{ bot.codename }}</td>
 			            <td>{{ bot.os_version }}</td>
 			            <td>{{ bot.build_version }}</td>
 			            <td>{{ bot.sdk_version }}</td>
 			            <td>{{ bot.device }}</td>
-			            <td>{{ bot.model }}</td>
 			            <td>{{ bot.product }}</td>
 			          </tr>
 			    {% end %}

