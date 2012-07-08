@@ -32,6 +32,7 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop, PeriodicCallback
 from models import dbsession
 from modules.Menu import Menu
+from modules.Sidebar import Sidebar
 from handlers.BotHandlers import *
 from handlers.UserHandlers import *
 from handlers.ErrorHandlers import *
@@ -76,7 +77,7 @@ application = Application([
     login_url = '/login',
     
     # UI Modules
-    ui_modules = {"Menu": Menu},
+    ui_modules = {"Menu": Menu, "Sidebar": Sidebar},
 
     # Milli-Seconds between session clean up
     clean_up_timeout = int(60 * 1000),

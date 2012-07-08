@@ -1,0 +1,37 @@
+{% extends "../main.html" %}
+
+{% block title %}Settings{% end %}
+
+{% block content %}
+
+
+	<h1>User Settings</h1>
+  <div class="well">
+	{% if message != None %}
+		<h2>{{ message }}</h2>
+	{% end %}
+    <form action="/settings" method="post" autocomplete="off">  
+      {% raw xsrf_form_html() %}
+      <fieldset>
+      	<legend>Change Password</legend>
+        <p>
+          <br />
+          <label for="old_password">Old Password</label>
+          <input placeholder="Old Password" type="password" name="old_password" id="old_password" />
+        </p>  
+        <p>
+          <label for="new_password">New Password</label>
+          <input placeholder="New Password" type="password" name="new_password" id="new_password" />
+        </p>
+        <p>
+          <label for="new_password2">Confirm Password</label>
+          <input placeholder="Confirm Password" type="password" name="new_password2" id="new_password2" />
+          <br />
+        </p>   
+      </fieldset>
+      <p class="submit">
+        <button class="btn btn-primary btn-large" type="submit"> Change Password </button>
+      </p>   
+    </form>
+  </div>
+{% end %}

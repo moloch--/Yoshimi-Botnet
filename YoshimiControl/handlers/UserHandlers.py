@@ -62,25 +62,14 @@ class SettingsHandler(UserBaseHandler):
             new_password_two = self.get_argument("new_password2")
         except:
             self.render("user/error.html", operation = "Changing Password", errors = "Please fill out all forms")
-        try:
-            response = captcha.submit(
-                self.get_argument('recaptcha_challenge_field'),
-                self.get_argument('recaptcha_response_field'),
-                self.application.settings['recaptcha_private_key'],
-                self.request.remote_ip
-            )
-        except:
-            self.render("user/error.html", operation = "Changing Password", errors = "Please fill out recaptcha")
+
         if user.validate_password(old_password):
             if new_password == new_password_two:
                 if 12 <= len(new_password):
-                    if response.is_valid:
-                        user.password = new_password
-                        self.dbsession.add(user)
-                        self.dbsession.flush()
-                        self.render("user/settings.html", message = "Succesfully Changed Password!")
-                    else:
-                        self.render("user/error.html", operation = "Changing Password", errors = "Invalid recaptcha")
+                    user.password = new_password
+                    self.dbsession.add(user)
+                    self.dbsession.flush()
+                    self.render("user/settings.html", message = "Succesfully Changed Password!")
                 else:
                     self.render("user/error.html", operation = "Change Password", errors = "Password must be at least 12 chars")
             else:
