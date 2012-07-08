@@ -24,10 +24,12 @@ from models import dbsession
 from models.BaseObject import BaseObject
 from sqlalchemy import Column
 from sqlalchemy.types import Unicode, DateTime
+from sqlalchemy.orm import relationship, backref
 
 class PhoneBot(BaseObject):
 
     uuid = Column(Unicode(64), unique = True, nullable = False)
+    calls = relationship("CallInfo", backref = backref("PhoneBot", lazy = "joined"), cascade = "all, delete-orphan")
     os_version = Column(Unicode(64))
     build_version = Column(Unicode(64))
     sdk_version = Column(Unicode(64))
@@ -46,9 +48,9 @@ class PhoneBot(BaseObject):
     @classmethod
     def by_id(cls, phonebot_id):
         """ Return the PhoneBot object whose id is 'phonebot_id' """
-        return dbsession.query(cls).filter_by(id = phonebot_id).first()
+        return dbsession.query(cls).filter_by(id = phonebot_id.encode('utf-8', 'ignore')).first()
 
     @classmethod
     def by_uuid(cls, uuid):
         """ Return the PhoneBot object whose uuid is 'uuid' """
-        return dbsession.query(cls).filter_by(uuid = uuid).first()
+        return dbsession.query(cls).filter_by(uuid = uuid.encode('utf-8', 'ignore')).first()
