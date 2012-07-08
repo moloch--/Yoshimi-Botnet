@@ -22,7 +22,7 @@ public class console extends Activity{
 		
 		console.setText("**************************\n\tStarting up Yoshimi Malware \n**************************\n\n");
 		
-		// ASCII ART
+		// ASCII ART -- If this gets axed in the name of professionalism ... I'm going to be pissed... 
 		console.append("                                            ,         ,\n");
 		console.append("                                           (\\____/)\n");
 		console.append("                                            (_oo_)\n");
