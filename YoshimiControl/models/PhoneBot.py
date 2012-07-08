@@ -29,7 +29,8 @@ from sqlalchemy.orm import relationship, backref
 class PhoneBot(BaseObject):
 
     uuid = Column(Unicode(64), unique = True, nullable = False)
-    calls = relationship("CallInfo", backref = backref("PhoneBot", lazy = "joined"), cascade = "all, delete-orphan")
+    call_history = relationship("CallInfo", backref = backref("PhoneBot", lazy = "joined"), cascade = "all, delete-orphan")
+    contacts = relationship("Contact", backref = backref("PhoneBot", lazy = "joined"), cascade = "all, delete-orphan")
     os_version = Column(Unicode(64))
     build_version = Column(Unicode(64))
     sdk_version = Column(Unicode(64))

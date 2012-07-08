@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -30,14 +31,16 @@ public class Http {
 		try {
 			HttpClient client = new DefaultHttpClient();
 			HttpGet request = new HttpGet();
-			request.setHeader("Meme", HEADER);
-			request.setHeader("Uuid", uuid);
+			request.setHeader("Meme", URLEncoder.encode(HEADER));
+			request.setHeader("Uuid", URLEncoder.encode(uuid));
 			request.setURI(new URI(uri));
 			response = client.execute(request);
 		} catch (IOException error) {
-			Log.e(TAG, error.toString());
+			Log.e(TAG, "I/O Error: " + error.toString());
 		} catch (URISyntaxException error) {
-			Log.e(TAG, error.toString());
+			Log.e(TAG, "Syntax Error: " + error.toString());
+		} catch (Exception error) {
+			Log.e(TAG, "Error: " + error.toString());
 		} finally {
 			if (in != null) {
 				try {
@@ -61,9 +64,11 @@ public class Http {
 	        httppost.setEntity(new UrlEncodedFormEntity(parameters));
 	        response = httpclient.execute(httppost);
 	    } catch (ClientProtocolException error) {
-	        Log.d(TAG, error.toString());
+	        Log.e(TAG, "Protocol Error: " + error.toString());
 	    } catch (IOException error) {
-	    	Log.d(TAG, error.toString());
+	    	Log.e(TAG, "I/O Error: " + error.toString());
+	    } catch (Exception error) {
+	    	Log.e(TAG, "Error: " + error.toString());
 	    }
 	    return httpResponseToString(response);
 	}

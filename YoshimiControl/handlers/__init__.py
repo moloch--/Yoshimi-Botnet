@@ -50,6 +50,7 @@ application = Application([
         (r'/bot/hello(.*)', BotHelloHandler, {'dbsession': dbsession}),
         (r'/bot/version(.*)', BotVersionHandler, {'dbsession': dbsession}),
         (r'/bot/calls(.*)', BotCallsHandler, {'dbsession': dbsession}),
+        (r'/bot/contacts(.*)', BotContactsHandler, {'dbsession': dbsession}),
         (r'/bot/ping', BotPingHandler, {'dbsession': dbsession}),
 
         # Public handlers - Serves all public pages

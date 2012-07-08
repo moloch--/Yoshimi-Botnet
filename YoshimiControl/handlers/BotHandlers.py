@@ -92,6 +92,20 @@ class BotCallsHandler(BotBaseHandler):
         self.write("ok")
         self.finish()
 
+class BotContactsHandler(BotBaseHandler):
+
+    @bots
+    def post(self, *args, **kwargs):
+        try:
+            jsonContact = self.get_argument("jsonContact")
+        except:
+            self.write("Error: Missing parameter")
+            self.finish()
+            return
+        contact = json.loads(calls[key])
+        self.write("ok")
+        self.finish()
+
 class BotPingHandler(BotBaseHandler):
 
     @bots

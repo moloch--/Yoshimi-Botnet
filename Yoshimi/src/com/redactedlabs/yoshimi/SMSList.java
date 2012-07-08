@@ -44,7 +44,9 @@ public class SMSList {
 	private String messageRead;
 
 	
-	public SMSList(){}
+	public SMSList() {
+		/* Blank Constructor */
+	}
 	
 	public String getJsonObject() throws JSONException{
 		//Returns a JSON Object String for Instance of Contact
@@ -55,7 +57,6 @@ public class SMSList {
 		contactJSONObject.accumulate("messageType", messageType);
 		contactJSONObject.accumulate("messageBody", messageBody);
 		contactJSONObject.accumulate("messageRead", messageRead);
-		System.out.println(contactJSONObject.toString());
 		return contactJSONObject.toString();
 	}
 	

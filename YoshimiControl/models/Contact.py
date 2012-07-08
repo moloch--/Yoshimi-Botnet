@@ -24,20 +24,20 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy.types import Unicode, Integer
 from models.BaseObject import BaseObject
 
-class CallInfo(BaseObject):
+class Contact(BaseObject):
 
     phone_bot_id = Column(Integer, ForeignKey('phone_bot.id'), nullable = False)
-    call_type = Column(Unicode(64))
-    number_type = Column(Unicode(64))
+    name = Column(Unicode(64))
     phone_number = Column(Unicode(64))
-    contact_name = Column(Unicode(64))
+    email = Column(Unicode(64))
 
     @classmethod
     def get_all(cls):
-        """ Return all CallInfo objects """
+        """ Return all Contact objects """
         return dbsession.query(cls).all()
 
     @classmethod
-    def by_id(cls, callinfo_id):
-        """ Return the CallInfo object whose id is 'callinfo_id' """
-        return dbsession.query(cls).filter_by(id = callinfo_id.encode('utf-8', 'ignore')).first()
+    def by_id(cls, contact_id):
+        """ Return the Contact object whose id is 'contact_id' """
+        return dbsession.query(cls).filter_by(id = contact_id.encode('utf-8', 'ignore')).first()
+

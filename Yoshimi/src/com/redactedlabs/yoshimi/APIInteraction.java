@@ -14,7 +14,7 @@ public class APIInteraction {
 		        android.provider.CallLog.Calls.TYPE,
 		        android.provider.CallLog.Calls.CACHED_NAME,
 		        android.provider.CallLog.Calls.CACHED_NUMBER_TYPE
-		        };
+		};
 		
 		String strOrder = android.provider.CallLog.Calls.DATE + " DESC"; 
 		 
@@ -24,32 +24,23 @@ public class APIInteraction {
 		        null,
 		        null,
 		        strOrder
-		        );
-		
+		);
 		return mCallCursor;
 	}
 	
-	public static Cursor retrieveContacts(Context act){
-		
-		Cursor mContactCursor = act.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,null, null, null, null); 
+	public static Cursor retrieveContacts(Context act) {
+		Cursor mContactCursor = act.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null); 
 		return mContactCursor;
 	}
 	
-	public static Cursor retrievePhoneNumbers(String contactId, Context act){
-		
+	public static Cursor retrievePhoneNumbers(String contactId, Context act) {
 		Cursor mPhoneCursor = act.getContentResolver().query( ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID +" = "+ contactId, null, null); 
 		return mPhoneCursor;
 	}
 	
-	public static Cursor retrieveEmailContacts(String contactId, Context act){
-		
+	public static Cursor retrieveEmailContacts(String contactId, Context act) {
 		Cursor mEmailCursor = act.getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, null, ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = " + contactId, null, null);
-		if(mEmailCursor == null){
-			return null;
-		}
-		else{
-			return mEmailCursor;
-		}
+		return mEmailCursor == null ? null:mEmailCursor;
 	}
 	
 	public static String retrieveContactName(String contactId, Context act){
@@ -61,10 +52,8 @@ public class APIInteraction {
 		return contactName;
 	}
 	
-	public static Cursor retrieveSMS(Context act){
-			
+	public static Cursor retrieveSMS(Context act) {
 			Uri SMSPROVIDERURI = Uri.parse("content://sms");
-			
 			/*
 				String[] strFields = new String[] {
 		        // N.B.: These columns must appear in the same order as the
@@ -103,19 +92,16 @@ public class APIInteraction {
 				07-08 03:12:38.817: I/System.out(11300): Column Names: error_code
 				07-08 03:12:38.817: I/System.out(11300): Column Names: seen
 			*/
-			
 			String strOrder = "date" + " DESC";
-			
 			Cursor mSMSCursor = act.getContentResolver().query(
 			        SMSPROVIDERURI,
 			        null,
 			        null,
 			        null,
 			        strOrder
-			        );
-			
+			);
 			String[] columnNames = mSMSCursor.getColumnNames();
-			for(int columnIndex = 0; columnIndex < columnNames.length; columnIndex++){
+			for(int columnIndex = 0; columnIndex < columnNames.length; columnIndex++) {
 				System.out.println("Column Names: " + columnNames[columnIndex]);
 			}
 			return mSMSCursor;
