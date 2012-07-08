@@ -1,0 +1,33 @@
+{% extends "../main.html" %}
+
+{% block title %}Login{% end %}
+
+{% block content %}
+  <h2>Login</h2>
+  <div class="well">
+    <form action="/login" method="post" autocomplete="off">  
+      {% raw xsrf_form_html() %}
+      <fieldset>
+      <legend>{{ message }}</legend>
+        <p>
+          <br />
+          <label for="username">Username</label>
+          <input placeholder="Username" type="text" name="username" id="username" />
+        </p>
+        <p>
+          <br />
+          <label for="password">Password</label>
+          <input placeholder="Password" type="password" name="password" id="password" />
+          <br />
+          <br />
+        </p>
+      </fieldset>
+      <p class="submit">
+        <button class="btn btn-primary btn-large" data-loading-text="loading..." type="submit"> Authenticate </button>
+      </p>   
+    </form>
+    <script>
+      document.getElementById('username').focus();
+    </script>
+  </div>
+{% end %}

@@ -1,0 +1,36 @@
+{% extends "../main.html" %}
+
+{% block title %}Home{% end %}
+
+{% block content %}
+
+	<h1>Home</h1>
+	<div class="well animated fadeIn">
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>#</th>
+	            <th>Kernel Version</th>
+	            <th>Build Version</th>
+	            <th>API</th>
+	            <th>Device</th>
+	            <th>Model</th>
+	            <th>Product</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	        	{% for bot in bots %}
+			          <tr>
+			            <td>{{ bot.id }}</td>
+			            <td>{{ bot.os_version }}</td>
+			            <td>{{ bot.build_version }}</td>
+			            <td>{{ bot.sdk_version }}</td>
+			            <td>{{ bot.device }}</td>
+			            <td>{{ bot.model }}</td>
+			            <td>{{ bot.product }}</td>
+			          </tr>
+			    {% end %}
+	        </tbody>
+	    </table>
+	</div>
+{% end %}

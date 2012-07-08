@@ -1,0 +1,23 @@
+<ul class="nav">
+
+
+	{% if uri == "/user" %}
+    	<li class="active">
+    {% else %}
+    	<li>
+    {% end %}
+    	<a href="/user">Admin Home</a>
+    </li>
+
+	{% if uri == "/manageusers" %}
+    	<li class="active">
+    {% else %}
+    	<li>
+    {% end %}
+    	<a href="/manageusers">Manage Users</a>
+    </li>
+
+    <li>
+    	<a href="/logout">Logout</a>
+    </li>
+</ul>

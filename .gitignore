@@ -1,4 +1,7 @@
 *.py[co]
+# Java
+*.class
+
 
 # Packages
 *.egg
