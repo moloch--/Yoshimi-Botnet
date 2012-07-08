@@ -19,8 +19,26 @@ public class console extends Activity{
 		
 		//Setup TextView to Print To...
 		TextView console = (TextView)findViewById(R.id.consoleText);
-		console.setText("***********************\n\t\tStarting up Malware \n***********************\n\n");
 		
+		console.setText("**************************\n\tStarting up Yoshimi Malware \n**************************\n\n");
+		
+		// ASCII ART
+		console.append("                                            ,         ,\n");
+		console.append("                                           (\\____/)\n");
+		console.append("                                            (_oo_)\n");
+		console.append("                                              (O)\n");
+		console.append("Yoshimi                             __||__      \\)\n");
+		console.append("    ,.                                  []/_______\\[]  /\n");
+		console.append(" /\\-'__                               / \\______/ \\/\n");
+		console.append("   / o.__o____                 /      /__\\\n");
+		console.append("  \\/_/ /.____/--,    VS     (\\    /____\\ \n");
+		console.append("   ||\' \n");
+		console.append("   | /                              The Pink Robots\n");
+		console.append("   \\_\\\n");
+		console.append("   -''\n");
+		
+		
+		console.append("\n");
 		// Get's the Application Context ???		
 		Context currentContext = getBaseContext();
 		
