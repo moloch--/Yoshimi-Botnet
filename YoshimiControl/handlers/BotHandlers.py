@@ -22,7 +22,7 @@ Created on Mar 15, 2012
 import json
 import logging
 
-from models import PhoneBot
+from models import PhoneBot, CallInfo
 from datetime import datetime
 from handlers.BaseHandlers import BotBaseHandler
 from tornado.web import RequestHandler
@@ -76,7 +76,8 @@ class BotCallsHandler(BotBaseHandler):
         calls = json.loads(jsonCalls)
         for key in calls.keys():
             call = json.loads(calls[key])
-            phone_call = Call(
+            logging.info("Got phone call info: %s" % call)
+            phone_call = CallInfo(
                     phone_bot_id = self.bot.id,
                     call_type = call['callType'],
                     number_type = call['numberType'],

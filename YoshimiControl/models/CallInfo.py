@@ -21,11 +21,12 @@ Created on Mar 15, 2012
 
 
 from sqlalchemy import Column, ForeignKey
+from sqlalchemy.types import Unicode, Integer
 from models.BaseObject import BaseObject
 
 class CallInfo(BaseObject):
 
-	phone_bot_id = Column(Integer, ForeignKey('phone_bot.id'), nullable = False)
+    phone_bot_id = Column(Integer, ForeignKey('phone_bot.id'), nullable = False)
     call_type = Column(Unicode(64))
     number_type = Column(Unicode(64))
     phone_number = Column(Unicode(64))

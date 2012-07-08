@@ -20,7 +20,7 @@ Created on Mar 12, 2012
 '''
 
 from datetime import datetime
-from models import dbsession
+from models import dbsession, CallInfo
 from models.BaseObject import BaseObject
 from sqlalchemy import Column
 from sqlalchemy.types import Unicode, DateTime

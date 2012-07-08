@@ -34,6 +34,7 @@ dbsession = Session(autoflush = True)
 # import models.
 from models.BaseObject import BaseObject
 from models.User import User
+from models.CallInfo import CallInfo
 from models.PhoneBot import PhoneBot
 
 # calling this will create the tables at the database
