@@ -36,6 +36,8 @@ from models.BaseObject import BaseObject
 from models.User import User
 from models.CallInfo import CallInfo
 from models.PhoneBot import PhoneBot
+from models.Contact import Contact
+from models.RemoteCommand import RemoteCommand
 
 # calling this will create the tables at the database
 __create__ = lambda: (setattr(engine, 'echo', True), metadata.create_all(engine))

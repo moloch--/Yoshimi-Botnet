@@ -18,6 +18,7 @@ Created on Mar 14, 2012
     limitations under the License.
 '''
 
+from models import PhoneBot
 from libs.Session import SessionManager
 from tornado.web import UIModule
 
@@ -29,8 +30,7 @@ class Sidebar(UIModule):
         if session != None:
             if session.data['menu'] == 'user':
                 return self.render_string('sidebar/user.html',
-                    uri = self.handler.request.uri, 
-                    user_name = session.data['user_name']
+                    bots = PhoneBot.get_all()
                 )
             elif session.data['menu'] == 'admin':
                 return self.render_string('sidebar/user.html', uri = self.handler.request.uri)

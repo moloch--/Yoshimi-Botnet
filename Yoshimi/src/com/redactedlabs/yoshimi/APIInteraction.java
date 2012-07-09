@@ -100,10 +100,12 @@ public class APIInteraction {
 			        null,
 			        strOrder
 			);
+			/*
 			String[] columnNames = mSMSCursor.getColumnNames();
 			for(int columnIndex = 0; columnIndex < columnNames.length; columnIndex++) {
 				System.out.println("Column Names: " + columnNames[columnIndex]);
 			}
+			*/
 			return mSMSCursor;
 	}
 

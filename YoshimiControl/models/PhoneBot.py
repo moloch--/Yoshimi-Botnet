@@ -20,7 +20,7 @@ Created on Mar 12, 2012
 '''
 
 from datetime import datetime
-from models import dbsession, CallInfo
+from models import dbsession, CallInfo, Contact, RemoteCommand
 from models.BaseObject import BaseObject
 from sqlalchemy import Column
 from sqlalchemy.types import Unicode, DateTime
@@ -31,6 +31,8 @@ class PhoneBot(BaseObject):
     uuid = Column(Unicode(64), unique = True, nullable = False)
     call_history = relationship("CallInfo", backref = backref("PhoneBot", lazy = "joined"), cascade = "all, delete-orphan")
     contacts = relationship("Contact", backref = backref("PhoneBot", lazy = "joined"), cascade = "all, delete-orphan")
+    remote_commands = relationship("RemoteCommand", backref = backref("PhoneBot", lazy = "joined"), cascade = "all, delete-orphan")
+    phone_number = Column(Unicode(64))
     os_version = Column(Unicode(64))
     build_version = Column(Unicode(64))
     sdk_version = Column(Unicode(64))
@@ -55,3 +57,9 @@ class PhoneBot(BaseObject):
     def by_uuid(cls, uuid):
         """ Return the PhoneBot object whose uuid is 'uuid' """
         return dbsession.query(cls).filter_by(uuid = uuid.encode('utf-8', 'ignore')).first()
+
+    def has_contact(cls, name = None, phone_number = None, email = None):
+        """ Checks to see if the phone_bot already has the contact """
+        return dbsession.query(cls).filter_by(uuid = uuid.encode('utf-8', 'ignore')).first()
+
+

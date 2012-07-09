@@ -61,6 +61,7 @@ application = Application([
 
         # User Handlers - Serves user related pages
         (r'/home', HomeHandler, {'dbsession': dbsession}),
+        (r'/ajax/botdetails(.*)', AjaxBotDetailsHandler, {'dbsession': dbsession}),
         (r'/settings', SettingsHandler, {'dbsession': dbsession}),
         (r'/logout', LogoutHandler),
       
@@ -91,6 +92,7 @@ application = Application([
     # Application version
     version = '0.0.1'
 )
+
 ### Main entry point
 def start_server():
     ''' Main entry point for the application '''

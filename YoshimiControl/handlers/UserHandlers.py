@@ -37,6 +37,21 @@ class HomeHandler(UserBaseHandler):
         user = User.by_user_name(self.session.data['user_name'])
         self.render('user/home.html', bots = PhoneBot.get_all())
 
+class AjaxBotDetailsHandler(UserBaseHandler):
+
+    @authenticated
+    def get(self, *args, **kwargs):
+        try:
+            bot_id = self.get_argument("bot_id")
+            bot = PhoneBot.by_id(bot_id)
+            if bot == None:
+                raise ValueError
+        except:
+            self.write("Error")
+            self.finish()
+            return
+        self.render("user/botdetails.html", bot = bot)
+
 class SettingsHandler(UserBaseHandler):
     ''' Does NOT extend BaseUserHandler '''
     
@@ -55,6 +70,7 @@ class SettingsHandler(UserBaseHandler):
             self.render("user/error.html")
 
     def change_password(self, *args, **kwargs):
+        ''' Changes a  password '''
         user = User.by_user_name(self.session.data['user_name'])
         try:
             old_password = self.get_argument("old_password")

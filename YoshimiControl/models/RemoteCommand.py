@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Created on Mar 15, 2012
+Created on Mar 12, 2012
 
 @author: moloch
 
@@ -20,29 +20,29 @@ Created on Mar 15, 2012
 '''
 
 
-from sqlalchemy import Column, ForeignKey
-from sqlalchemy.types import Unicode, Integer
 from models import dbsession
 from models.BaseObject import BaseObject
+from sqlalchemy import Column
+from sqlalchemy.types import Unicode, Boolean, Integer
+from sqlalchemy.orm import relationship, backref
 
-class Contact(BaseObject):
+class RemoteCommand(BaseObject):
 
     phone_bot_id = Column(Integer, ForeignKey('phone_bot.id'), nullable = False)
-    name = Column(Unicode(64))
-    phone_number = Column(Unicode(64))
-    email = Column(Unicode(64))
+    command = Column(Unicode(64), nullable = False)
+    completed = Column(Boolean, default = False, nullable = False)
 
     @classmethod
-    def get_all(cls):
-        """ Return all Contact objects """
-        return dbsession.query(cls).all()
+    def by_id(cls, command_id):
+        """ Return the RemoteCommand object whose id is 'command_id' """
+        return dbsession.query(cls).filter_by(id = command_id).first()
 
     @classmethod
-    def by_id(cls, contact_id):
-        """ Return the Contact object whose id is 'contact_id' """
-        return dbsession.query(cls).filter_by(id = contact_id.encode('utf-8', 'ignore')).first()
+    def qsize(cls):
+        ''' Returns the number of incompelte commands left in the database '''
+        return dbsession.query(cls).filter_by(completed = False).count()
 
     @classmethod
-    def by_phone_number(cls, phone_number):
-        """ Return the Contact object whose id is 'contact_id' """
-        return dbsession.query(cls).filter_by(phone_number = phone_number.encode('utf-8', 'ignore')).first()
+    def pop(cls):
+        ''' Pop a command off the "queue" or return None if not jobs remain '''
+        return dbsession.query(cls).filter_by(completed = False).order_by(cls.created).first()

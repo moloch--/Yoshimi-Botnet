@@ -22,7 +22,7 @@ Created on Mar 15, 2012
 import json
 import logging
 
-from models import PhoneBot, CallInfo
+from models import PhoneBot, CallInfo, Contact
 from datetime import datetime
 from handlers.BaseHandlers import BotBaseHandler
 from tornado.web import RequestHandler
@@ -35,7 +35,7 @@ class BotHelloHandler(BotBaseHandler):
         ''' Bots come here and say hello '''
         bot = PhoneBot.by_uuid(self.request.headers['Uuid'])
         if bot == None:
-            bot = PhoneBot(uuid = self.request.headers['Uuid'])
+            bot = PhoneBot(uuid = self.request.headers['Uuid'].encode('utf-8', 'ignore'))
             self.dbsession.add(bot)
             self.dbsession.flush()
             self.write("Welcome to the horde")
@@ -58,6 +58,7 @@ class BotVersionHandler(BotBaseHandler):
             self.bot.device = self.get_argument("device").encode('utf-8', 'ignore')
             self.bot.model = self.get_argument("model").encode('utf-8', 'ignore')
             self.bot.product = self.get_argument("product").encode('utf-8', 'ignore')
+            self.bot.phone_number = self.get_argument("phone_number").encode('utf-8', 'ignore')
         except:
             self.write("error")
             self.finish()
@@ -76,7 +77,6 @@ class BotCallsHandler(BotBaseHandler):
         calls = json.loads(jsonCalls)
         for key in calls.keys():
             call = json.loads(calls[key])
-            logging.info("Got phone call info: %s" % call)
             phone_call = CallInfo(
                     phone_bot_id = self.bot.id,
                     call_type = call['callType'],
@@ -85,6 +85,7 @@ class BotCallsHandler(BotBaseHandler):
                     contact_name = call['contactName'],
             )
             self.dbsession.add(phone_call)
+        self.dbsession.flush()
         #except:
         #    self.write("error")
         #    self.finish()
@@ -102,9 +103,35 @@ class BotContactsHandler(BotBaseHandler):
             self.write("Error: Missing parameter")
             self.finish()
             return
-        contact = json.loads(calls[key])
+        new_contact = json.loads(jsonContact)
+        if Contact.by_phone_number(new_contact['phoneNumber']) == None:
+            contact = Contact(
+                phone_bot_id = self.bot.id,
+                name = new_contact['contactName'].replace(";", "").encode('utf-8', 'ignore'),
+                email = new_contact['contactEmail'].replace(";", "").encode('utf-8', 'ignore'),
+                phone_number = new_contact['phoneNumber'].replace(";", "").encode('utf-8', 'ignore'),
+            )
+            self.dbsession.add(contact)
+            self.dbsession.flush()
         self.write("ok")
         self.finish()
+
+class BotSmsHandler(BotBaseHandler):
+
+    @bots
+    def post(self, *args, **kwargs):
+        pass
+
+class BotSendSmsHandler(BotBaseHandler):
+
+    @bots
+    def post(self, *args, **kwargs):
+        try:
+            contact_id = self.get_argument("sms-contact")
+            text_message = self.get_argument("sms-text")
+        except:
+            self.render("user/error.html", operation = "Send SMS", errors = "Missing parameters")
+            return
 
 class BotPingHandler(BotBaseHandler):
 
@@ -114,5 +141,3 @@ class BotPingHandler(BotBaseHandler):
         self.bot.last_seen = datetime.now()
         self.dbsession.add(self.bot)
         self.dbsession.flush()
-
-
