@@ -5,11 +5,10 @@
         <h3>Send SMS Message</h3>
     </div>
     <div class="modal-body">
-        <h4>SMS Options</h4>
-        <form id="sms-options" method="post" action="/bot/sendsms">
-        	<input type="hidden" id="sms-contact" name="format" value="" />
+        <form id="sms-options" method="post" action="/sendsms">
+        	<input type="hidden" id="sms-contact" name="sms-contact" value="" />
+        	<input type="hidden" id="bot-id" name="bot-id" value="" />
         	<br />
-        	SMS Body<br />
 			<input type="text" name="sms-text" placeholder="SMS Text Message" />
 		</form>
     </div>
@@ -72,7 +71,7 @@
 			            <td>{{ contact.phone_number }}</td>
 			            <td>{{ contact.email }}</td>
 			            <td>
-			            	<a class="btn btn-primary" data-toggle="modal" href="#sendSmsModal" onclick="set_contact({{ contact.id }})">
+			            	<a class="btn btn-primary" data-toggle="modal" href="#sendSmsModal" onclick="set_contact({{ contact.id }}, {{ bot.id }})">
 			            		Send SMS
 			            	</a>
 			            </td>

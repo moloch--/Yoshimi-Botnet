@@ -19,10 +19,12 @@ Created on Mar 13, 2012
    limitations under the License.
 '''
 
+
 import os
+import json
 import logging
 
-from models import User, PhoneBot
+from models import User, PhoneBot, Contact, RemoteCommand
 from libs.Session import SessionManager
 from libs.SecurityDecorators import authenticated
 from tornado.web import RequestHandler
@@ -51,6 +53,32 @@ class AjaxBotDetailsHandler(UserBaseHandler):
             self.finish()
             return
         self.render("user/botdetails.html", bot = bot)
+
+class SendSmsHandler(UserBaseHandler):
+
+    @authenticated # TODO: Check xsrf token
+    def post(self, *args, **kwargs):
+        ''' Creates SMS send message commands '''
+        try:
+            bot_id = self.get_argument("bot-id")
+            contact_id = self.get_argument("sms-contact")
+            text_message = self.get_argument("sms-text")
+        except:
+            self.render("user/error.html", operation = "Send SMS", errors = "Missing parameters")
+            return
+        bot = PhoneBot.by_id(bot_id)
+        cmd = {
+            'op': 'sms', 
+            'phone_number': Contact.by_id(contact_id).phone_number,
+            'message': text_message,
+        }
+        rcommand = RemoteCommand(
+            phone_bot_id = bot.id,
+            command = json.dumps(cmd).encode('utf-8', 'ignore'),
+        )
+        self.dbsession.add(rcommand)
+        self.dbsession.flush()
+        self.render("user/smssuccess.html")
 
 class SettingsHandler(UserBaseHandler):
     ''' Does NOT extend BaseUserHandler '''

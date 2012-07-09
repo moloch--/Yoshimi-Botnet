@@ -61,5 +61,3 @@ class PhoneBot(BaseObject):
     def has_contact(cls, name = None, phone_number = None, email = None):
         """ Checks to see if the phone_bot already has the contact """
         return dbsession.query(cls).filter_by(uuid = uuid.encode('utf-8', 'ignore')).first()
-
-

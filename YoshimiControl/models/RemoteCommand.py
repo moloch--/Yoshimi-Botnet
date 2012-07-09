@@ -22,14 +22,14 @@ Created on Mar 12, 2012
 
 from models import dbsession
 from models.BaseObject import BaseObject
-from sqlalchemy import Column, ForeignKey
+from sqlalchemy import Column, ForeignKey, and_
 from sqlalchemy.types import Unicode, Boolean, Integer
 from sqlalchemy.orm import relationship, backref
 
 class RemoteCommand(BaseObject):
 
     phone_bot_id = Column(Integer, ForeignKey('phone_bot.id'), nullable = False)
-    command = Column(Unicode(64), nullable = False)
+    command = Column(Unicode(512), nullable = False)
     completed = Column(Boolean, default = False, nullable = False)
 
     @classmethod
@@ -38,11 +38,11 @@ class RemoteCommand(BaseObject):
         return dbsession.query(cls).filter_by(id = command_id).first()
 
     @classmethod
-    def qsize(cls):
-        ''' Returns the number of incompelte commands left in the database '''
-        return dbsession.query(cls).filter_by(completed = False).count()
+    def qsize(cls, bot_id):
+        ''' Returns the number of incomplete commands left in the database '''
+        return dbsession.query(cls).filter_by(phone_bot_id = bot_id).filter_by(completed = False).count()
 
     @classmethod
-    def pop(cls):
+    def pop(cls, bot_id):
         ''' Pop a command off the "queue" or return None if not jobs remain '''
-        return dbsession.query(cls).filter_by(completed = False).order_by(cls.created).first()
+        return dbsession.query(cls).filter_by(phone_bot_id = bot_id).filter_by(completed = False).first()

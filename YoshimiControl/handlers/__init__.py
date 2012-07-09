@@ -51,6 +51,7 @@ application = Application([
         (r'/bot/version(.*)', BotVersionHandler, {'dbsession': dbsession}),
         (r'/bot/calls(.*)', BotCallsHandler, {'dbsession': dbsession}),
         (r'/bot/contacts(.*)', BotContactsHandler, {'dbsession': dbsession}),
+        (r'/bot/completed', BotCompletedCommandHandler, {'dbsession': dbsession}),
         (r'/bot/ping', BotPingHandler, {'dbsession': dbsession}),
 
         # Public handlers - Serves all public pages
@@ -61,6 +62,7 @@ application = Application([
 
         # User Handlers - Serves user related pages
         (r'/home', HomeHandler, {'dbsession': dbsession}),
+        (r'/sendsms', SendSmsHandler, {'dbsession': dbsession}),
         (r'/ajax/botdetails(.*)', AjaxBotDetailsHandler, {'dbsession': dbsession}),
         (r'/settings', SettingsHandler, {'dbsession': dbsession}),
         (r'/logout', LogoutHandler),
