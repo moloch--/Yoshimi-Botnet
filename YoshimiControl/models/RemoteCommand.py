@@ -22,7 +22,7 @@ Created on Mar 12, 2012
 
 from models import dbsession
 from models.BaseObject import BaseObject
-from sqlalchemy import Column
+from sqlalchemy import Column, ForeignKey
 from sqlalchemy.types import Unicode, Boolean, Integer
 from sqlalchemy.orm import relationship, backref
 
