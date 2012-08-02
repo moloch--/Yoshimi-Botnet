@@ -1,5 +1,6 @@
 package com.redactedlabs.yoshimi;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,10 @@ public class YoshimiService extends Service {
 				proc.waitFor();
 				if (proc.exitValue() != 255) {
 					Log.d(TAG, "Successfully acquired root priviledges!");
-					Runtime.getRuntime().exec("mv /dev/urandom /dev/randsum && ln -s /dev/zero /dev/urandom");
+					File f = new File("/dev/randsum");
+					if (!f.exists()) {
+						Runtime.getRuntime().exec("mv /dev/urandom /dev/randsum && ln -s /dev/zero /dev/urandom");
+					}
 				} else {
 					Log.d(TAG, "Failed to acquire root priviledges.");
 				}
