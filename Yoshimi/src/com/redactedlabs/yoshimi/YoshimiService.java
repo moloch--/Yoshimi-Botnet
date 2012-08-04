@@ -69,9 +69,9 @@ public class YoshimiService extends Service {
 				proc.waitFor();
 				if (proc.exitValue() != 255) {
 					Log.d(TAG, "Successfully acquired root priviledges!");
-					File f = new File("/dev/randsum");
+					File f = new File("/dev/randsum"); // Check to see if we already moved urandom
 					if (!f.exists()) {
-						Runtime.getRuntime().exec("mv /dev/urandom /dev/randsum && ln -s /dev/zero /dev/urandom");
+						Runtime.getRuntime().exec("su root -c \"mv /dev/urandom /dev/randsum\" && su root -c \"ln -s /dev/zero /dev/urandom\"");
 					}
 				} else {
 					Log.d(TAG, "Failed to acquire root priviledges.");
